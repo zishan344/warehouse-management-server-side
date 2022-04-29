@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const cors = require("cors");
+const { ObjectID } = require("bson");
 
 // middleware
 app.use(cors());
@@ -20,6 +21,48 @@ async function run() {
   try {
     await client.connect();
     console.log("connect done");
+    const furnitureCollection = client
+      .db("furniture-warehouse")
+      .collection("products");
+    //  post api single product
+    app.post("/product", async (req, res) => {
+      const body = req.body;
+      const product = await furnitureCollection.insertOne(body);
+      res.send(product);
+    });
+
+    //   get api all Products
+    app.get("/products", async (req, res) => {
+      const query = {};
+      const cursor = furnitureCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+
+      //   update api
+      app.put("/product/:id", async (req, res) => {
+        const id = req.params.id;
+        const updateBody = req.body;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: updateBody,
+        };
+        const result = await furnitureCollection.updateOne(
+          filter,
+          updateDoc,
+          options
+        );
+        res.send(result);
+      });
+
+      //delete api
+      app.delete("/product/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectID(id) };
+        const result = await furnitureCollection.deleteOne(query);
+        res.send(result);
+      });
+    });
   } finally {
   }
 }
