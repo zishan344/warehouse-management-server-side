@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const port = process.env.PORT || 5000;
 const cors = require("cors");
-const { ObjectID } = require("bson");
+// const { ObjectID } = require("bson");
 
 // middleware
 app.use(cors());
@@ -70,7 +70,7 @@ async function run() {
       //    https://enigmatic-eyrie-33917.herokuapp.com/product/id
       app.delete("/product/:id", async (req, res) => {
         const id = req.params.id;
-        const query = { _id: ObjectID(id) };
+        const query = { _id: ObjectId(id) };
         const result = await furnitureCollection.deleteOne(query);
         res.send(result);
       });
