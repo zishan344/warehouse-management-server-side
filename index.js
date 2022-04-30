@@ -41,6 +41,7 @@ async function run() {
       res.send(result);
 
       // get api single product
+      //https://enigmatic-eyrie-33917.herokuapp.com/product/{id}
       app.get("/product/:id", async (req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectId(id) };
