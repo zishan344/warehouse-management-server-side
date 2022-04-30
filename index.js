@@ -1,10 +1,11 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;
-const cors = require("cors");
+
 // const { ObjectID } = require("bson");
 
 // middleware
@@ -39,41 +40,48 @@ async function run() {
       const cursor = furnitureCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
+    });
+    // get api single product
+    //https://enigmatic-eyrie-33917.herokuapp.com/product/{id}
+    app.get("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const cursor = await furnitureCollection.findOne(query);
+      res.send(cursor);
+    });
 
-      // get api single product
-      //https://enigmatic-eyrie-33917.herokuapp.com/product/{id}
-      app.get("/product/:id", async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) };
-        const cursor = await furnitureCollection.findOne(query);
-        res.send(cursor);
-      });
-      //   update api
-      //   https://enigmatic-eyrie-33917.herokuapp.com/product/id
-      app.put("/product/:id", async (req, res) => {
-        const id = req.params.id;
-        const updateBody = req.body;
-        const filter = { _id: ObjectId(id) };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: updateBody,
-        };
-        const result = await furnitureCollection.updateOne(
-          filter,
-          updateDoc,
-          options
-        );
-        res.send(result);
-      });
+    app.get("/order", async (req, res) => {
+      const query = {};
+      const cursor = furnitureCollection.find(query);
+      const order = await cursor.toArray();
+      res.send(order);
+    });
 
-      //delete api
-      //    https://enigmatic-eyrie-33917.herokuapp.com/product/id
-      app.delete("/product/:id", async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) };
-        const result = await furnitureCollection.deleteOne(query);
-        res.send(result);
-      });
+    //   update api
+    //   https://enigmatic-eyrie-33917.herokuapp.com/product/id
+    app.put("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateBody = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: updateBody,
+      };
+      const result = await furnitureCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    //delete api
+    //    https://enigmatic-eyrie-33917.herokuapp.com/product/id
+    app.delete("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await furnitureCollection.deleteOne(query);
+      res.send(result);
     });
   } finally {
   }
