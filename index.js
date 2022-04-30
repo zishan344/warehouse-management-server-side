@@ -51,7 +51,9 @@ async function run() {
     });
 
     app.get("/order", async (req, res) => {
-      const query = {};
+      const email = req.query.email;
+      console.log(email);
+      const query = { email: email };
       const cursor = furnitureCollection.find(query);
       const order = await cursor.toArray();
       res.send(order);
