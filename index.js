@@ -25,6 +25,7 @@ async function run() {
       .db("furniture-warehouse")
       .collection("products");
     //  post api single product
+    // https://enigmatic-eyrie-33917.herokuapp.com/product
     app.post("/product", async (req, res) => {
       const body = req.body;
       const product = await furnitureCollection.insertOne(body);
@@ -32,13 +33,22 @@ async function run() {
     });
 
     //   get api all Products
+    // https://enigmatic-eyrie-33917.herokuapp.com/products
     app.get("/products", async (req, res) => {
       const query = {};
       const cursor = furnitureCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
 
+      // get api single product
+      app.get("/product/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const cursor = await furnitureCollection.findOne(query);
+        res.send(cursor);
+      });
       //   update api
+      //   https://enigmatic-eyrie-33917.herokuapp.com/product/id
       app.put("/product/:id", async (req, res) => {
         const id = req.params.id;
         const updateBody = req.body;
@@ -56,6 +66,7 @@ async function run() {
       });
 
       //delete api
+      //    https://enigmatic-eyrie-33917.herokuapp.com/product/id
       app.delete("/product/:id", async (req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectID(id) };
